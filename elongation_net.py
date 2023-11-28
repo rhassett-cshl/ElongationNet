@@ -171,11 +171,10 @@ class CustomLoss(nn.Module):
     def __init__(self):
         super(CustomLoss, self).__init__()
 
-    def forward(self, X_ji, C_j, Z_ji):
-        #print(Z_ji.shape)
+    def forward(self, X_ji, C_j, rho_ji):
+        #print(rho_ji.shape)
         epsilon = 1e-8
-        clipped_Z_ji = torch.clamp(Z_ji, epsilon)
-        loss = X_ji * torch.log(clipped_Z_ji) + C_j * torch.exp(-clipped_Z_ji)
+        loss = X_ji * rho_ji + C_j * torch.exp(-rho_ji)
         return (loss).mean()
 
 
@@ -187,7 +186,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
-num_epochs = 30
+num_epochs = 50
 
 loss_hist_train = [0] * num_epochs
 loss_hist_valid = [0] * num_epochs
@@ -232,43 +231,18 @@ for epoch in range(num_epochs):
 # In[14]:
 
 
-weights = model.weight.data.cpu().numpy()
-bias = model.bias.data.cpu().numpy()
-
-combined = ', '.join([f'"{s}": {f}' for s, f in zip(feature_names, weights[0])])
-print(combined)
-
-
-# In[112]:
-
-
-# GLM K
-
-# ctcf: -0.008355491
-# sj5: -0.114737868
-# sj3: -0.181587543
-# dms: -0.080544917
-# rpts: 0.063179057
-
-# gc: -0.240107566
-# histone: -0.043173335
-
-
-# In[15]:
-
-
 from datetime import datetime
 
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-filename = f"models/Elongation_Model_{timestamp}.pth"
+filename = "models/Elongation_Model_50_epochs2.pth"#f"models/Elongation_Model_{timestamp}.pth"
 torch.save(model.state_dict(), filename)
 
 
-# In[24]:
+# In[107]:
 
 
 """
-model = Model(num_features)
+model = nn.Linear(num_features, 1)
 model.load_state_dict(torch.load("models/Elongation_Model.pth"))
 cuda_available = torch.cuda.is_available()
 print("CUDA (GPU support) is available:", cuda_available)
@@ -283,6 +257,31 @@ if cuda_available:
 first_param_device = next(model.parameters()).device
 print("Model is on device:", first_param_device)
 """
+
+
+# In[15]:
+
+
+weights = model.weight.data.cpu().numpy()
+bias = model.bias.data.cpu().numpy()
+
+combined = ', '.join([f'"{s}": {f}' for s, f in zip(feature_names, weights[0])])
+print(combined)
+
+
+# In[ ]:
+
+
+# GLM K
+
+# ctcf: -0.008355491
+# sj5: -0.114737868
+# sj3: -0.181587543
+# dms: -0.080544917
+# rpts: 0.063179057
+
+# gc: -0.240107566
+# histone: -0.043173335
 
 
 # In[16]:
@@ -333,17 +332,22 @@ tstdl = DataLoader(tstset, batch_size=batch_size, num_workers=0, shuffle=False, 
 model.eval()
 
 data_iter = iter(tstdl)
+
+
+# In[20]:
+
+
 for i in range(0, 4):
     inputs = next(data_iter) 
     print("number of samples: " + str(len(inputs)))
 
     with torch.no_grad():
         y_inputs = inputs['Y_ji'].to(device)
-        outputs = model(y_inputs)
+        rho_ji = model(y_inputs)
 
     simulated_zeta = inputs['Z_ji']
     # convert log(Z) outputs to Z
-    predicted_zeta = torch.exp(outputs.cpu().squeeze())
+    predicted_zeta = torch.exp(rho_ji.cpu().squeeze())
     print("predicted zeta:")
     print(predicted_zeta)
 
@@ -353,7 +357,7 @@ for i in range(0, 4):
     plot_data(simulated_zeta, predicted_zeta)
 
 
-# In[20]:
+# In[114]:
 
 
 import torch.nn.functional as F
@@ -363,9 +367,9 @@ simulated_zeta = []
 with torch.no_grad():
     for batch in tstdl:
         y_inputs = batch['Y_ji'].to(device)
-        outputs = model(y_inputs)
+        rho_ji = model(y_inputs)
         # convert log(Z) outputs to Z
-        predicted_zeta.append(torch.exp(outputs.cpu()))
+        predicted_zeta.append(torch.exp(rho_ji.cpu()))
         simulated_zeta.append(batch['Z_ji'])
 
 predicted_zeta = torch.cat(predicted_zeta, dim=0)
@@ -375,16 +379,4 @@ mse = F.mse_loss(predicted_zeta.squeeze(), simulated_zeta)
 
 print(f"Mean Absolute Error: {mae.item():.4f}")
 print(f"Mean Squared Error: {mse.item():.4f}")
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
 
