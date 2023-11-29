@@ -13,4 +13,4 @@
 
 # Your commands go here
 conda activate cnn-motif
-python ./elongation_net.py 
+python ./elongation_net_chr22.py 
