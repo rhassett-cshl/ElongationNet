@@ -151,9 +151,10 @@ print("Number of parameters: " + str(nparm))
 
 first_param_device = next(model.parameters()).device
 print("Model is on device:", first_param_device)
-#model.double()rain_loader = dataloader(train_dataset, batch_size=1)
-val_loader = dataloader(val_dataset, batch_size=1)
-test_loader = dataloader(test_dataset, batch_size=1)
+#model.double()
+train_loader = DataLoader(train_dataset, batch_size=1)
+val_loader = DataLoader(val_dataset, batch_size=1)
+test_loader = DataLoader(test_dataset, batch_size=1)
 
 class CustomLoss(nn.Module):
     def __init__(self):
