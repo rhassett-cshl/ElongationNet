@@ -219,5 +219,5 @@ for epoch in range(num_epochs):
 from datetime import datetime
 
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-filename = f"models/Elongation_Model_Large_Rebatched2_{timestamp}.pth"
+filename = f"models/Elongation_Model_multiple_gpus.pth"
 torch.save(model.state_dict(), filename)
