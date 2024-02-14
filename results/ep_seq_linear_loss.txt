@@ -1,0 +1,4 @@
+Neural Net Loss: 0.1371
+GLM Loss: 0.1460
+
+Note: Trained with full-length genes
