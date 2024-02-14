@@ -1,2 +1,0 @@
-Neural Net Loss: 0.1460
-GLM Loss: 0.1460

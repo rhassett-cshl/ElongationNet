@@ -1,0 +1,10 @@
+{
+    "model_type": "ep_linear",
+    "learning_rate": 1e-4,
+    "l1_lambda": 0,
+    "l2_lambda": 0,
+    "train_use_sliding_window": false,
+    "valid_use_sliding_window": false,
+    "epochs": 20,
+    "wandb_logging": false
+}
