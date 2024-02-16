@@ -3,28 +3,28 @@
         "values": ["cnn"]
     },
     "y_channels": {
-        "values": [[32, 64], [16, 32]] 
+        "values": [[16], [32]] 
     },
     "y_kernel_sizes": {
-        "values": [[9]] 
+        "values": [[10], [3, 5], [5, 10]] 
     },
     "n_channels": {
-        "values": [[16]] 
+        "values": [[64, 128], [32, 64], [32, 64, 128]] 
     },
     "n_kernel_sizes": {
-        "values": [9] 
+        "values": [[3, 4], [3, 4, 5], [3, 5, 10], [5, 5]] 
     },
     "dropout": {
-        "values": [0.5]
+        "values": [0.2, 0.5]
     },
     "learning_rate": {
-        "values": [1e-1, 1e-2, 1e-3, 1e-4, 1e-5]
+        "values": [1e-2, 1e-4]
     },
     "l1_lambda": {
-        "values": [0]
+        "values": [0, 0.01]
     },
     "l2_lambda": {
-        "values": [0]
+        "values": [0, 1e-6]
     },
     "lstm_layer_size": {
         "values": [16]
@@ -48,9 +48,6 @@
         "values": [null]
     },
     "epochs": {
-        "values": [20]
-    },
-    "wandb_logging": {
-        "value": true
+        "values": [300]
     }
 }

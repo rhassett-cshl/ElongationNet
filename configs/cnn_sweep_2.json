@@ -1,0 +1,53 @@
+{
+    "model_type": {
+        "values": ["cnn"]
+    },
+    "y_channels": {
+        "values": [[16]] 
+    },
+    "y_kernel_sizes": {
+        "values": [[5, 9]] 
+    },
+    "n_channels": {
+        "values": [[64, 128]] 
+    },
+    "n_kernel_sizes": {
+        "values": [[3, 5, 9]] 
+    },
+    "dropout": {
+        "values": [0.2]
+    },
+    "learning_rate": {
+        "values": [1e-2]
+    },
+    "l1_lambda": {
+        "values": [0]
+    },
+    "l2_lambda": {
+        "values": [1e-5, 1e-7]
+    },
+    "lstm_layer_size": {
+        "values": [16]
+    },
+    "num_lstm_layers": {
+        "values": [1]
+    },
+    "bidirectional": {
+        "values": [false]
+    },
+    "train_use_sliding_window": {
+        "values": [true]
+    },
+    "train_window_size": {
+        "values": [100]
+    },
+    "valid_use_sliding_window": {
+        "values": [false]
+    },
+    "valid_window_size": {
+        "values": [null]
+    },
+    "epochs": {
+        "values": [300]
+    }
+}
