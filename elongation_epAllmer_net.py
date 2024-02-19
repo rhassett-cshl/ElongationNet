@@ -18,6 +18,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from natsort import natsorted, index_natsorted
 import pickle
 import math 
 import json
@@ -398,36 +399,12 @@ model.double()
 
 
 """ Convert results to bigwig format """
-
-
-
-#full_data = pd.concat([train_data, valid_data, test_data], ignore_index=True)
-
-
+full_data = pd.concat([train_data, valid_data, test_data], ignore_index=True)
 
 model.eval()
 
-full_dl = build_dataset(test_data, 1, False, None) #full_data
+full_dl = build_dataset(full_data, 1, False, None)
 full_data_iter = iter(full_dl)
-
-
-
-
-"""
-bw = pyBigWig.open(f"{cell_type}_neuralNetEpAllmerPredZeta.bw", "w")
-chrom_sizes = {'chr1': 248956422, 'chr2': 242193529}
-bw.addHeader(list(chrom_sizes.items()))
-# Add entries from DataFrame
-for index, row in df.iterrows():
-    bw.addEntries([row['chrom']], [row['start']], ends=[row['end']], values=[row['value']])
-
-# Close the BigWig file
-bw.close()
-"""
-
-
-# In[ ]:
-
 
 columns = ['Chr', 'Start', 'End', 'Value', 'Strand']
 bw_df = df = pd.DataFrame(columns=columns)
@@ -490,8 +467,14 @@ bw_df.loc[bw_df["Strand"] == 0, "Value"] = bw_df.loc[bw_df["Strand"] == 0, "Valu
 # remove strand column when storing to bigwig file
 del bw_df["Strand"]
 
+# End value is exclusive, add 1 to all end positions
+bw_df['End'] = bw_df['End'] + 1
+
 # update Chr column values
 bw_df['Chr'] = 'chr' + bw_df['Chr'].astype(str)
+
+# index_natsorted returns indices to then sort by multiple columns
+bw_df = bw_df.sort_values(by=['Chr', 'Start'], key=lambda x: np.argsort(index_natsorted(zip(bw_df['Chr'], bw_df['Start']))))
 
 # setup header
 epAllmer_bw = pyBigWig.open("./data/k562_epAllmerPredZeta.bw")
@@ -500,18 +483,6 @@ chrom_lengths = list(chrom_lengths.items())
 
 bw = pyBigWig.open("./data/k562_epAllmerNeuralNetZeta.bw", "w")
 bw.addHeader(chrom_lengths)
-
-print("add entries to bw")
-
-print(type(bw_df['Chr'].tolist()[0]))
-print(type(bw_df['Start'].tolist()[0]))
-print(type(bw_df['End'].tolist()[0]))
-print(type(bw_df['Value'].tolist()[0]))
-
-print(bw_df['Chr'].tolist()[:5])
-print(bw_df['Start'].tolist()[:5])
-print(bw_df['End'].tolist()[:5])
-print(bw_df['Value'].tolist()[:5])
 
 bw.addEntries(bw_df['Chr'].tolist(), bw_df['Start'].tolist(), ends=bw_df['End'].tolist(), values=bw_df['Value'].tolist())
 
