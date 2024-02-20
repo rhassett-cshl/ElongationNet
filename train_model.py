@@ -14,7 +14,7 @@ increase_cut=0.00001
 patience=5
 
 nucleotides = ['A', 'T', 'G', 'C']
-train_batch_size = 32
+#train_batch_size = 32
 valid_batch_size = 1
 
 def train_model(use_wandb, config_name, config):
@@ -33,23 +33,26 @@ def train_model(use_wandb, config_name, config):
     print("Number of Samples: " + str(num_samples))
     print("Number of Epigenomic Features: " + str(num_ep_features))
 
-    #torch.backends.cudnn.benchmark = True
-        
     model = setup_model(config, device, num_ep_features, num_seq_features)
     
     train_window_size = None
+    train_stride = None
+    train_batch_size = config["train_batch_size"]
     if config["train_use_sliding_window"]:
         train_window_size = config["train_window_size"]
-    train_loader = setup_dataloader(train_data, feature_names, nucleotides, train_batch_size, config["train_use_sliding_window"], train_window_size)
+        train_stride = config["train_stride"]
+    train_loader = setup_dataloader(train_data, feature_names, nucleotides, train_batch_size, config["train_use_sliding_window"], train_window_size, train_stride)
     
     valid_window_size = None
+    valid_stride = None
     if config["valid_use_sliding_window"]:
         valid_window_size = config["valid_window_size"]
-    valid_loader = setup_dataloader(valid_data, feature_names, nucleotides, valid_batch_size, config["valid_use_sliding_window"], valid_window_size)
+        valid_stride = config["valid_stride"]
+    valid_loader = setup_dataloader(valid_data, feature_names, nucleotides, valid_batch_size, config["valid_use_sliding_window"], valid_window_size, valid_stride)
     
     optimizer = optim.Adam(model.parameters(), lr=config['learning_rate'], weight_decay=config['l2_lambda'])
         
-    loss_fn = CustomLoss() #torch.jit.script(CustomLoss())
+    loss_fn = CustomLoss()
 
     # track loss curves
     loss_neural_net_train = [0] * config["epochs"]
@@ -106,8 +109,8 @@ def train_model(use_wandb, config_name, config):
         scheduler.step(valid_neural_net_loss)
         
     
-    if not wandb:
-        filename = f"./models/{config_name}.pth"
+    if not use_wandb:
+        filename = f"./model_checkpoints/{config_name}.pth"
         torch.save(model.state_dict(), filename)
         
     return model, loss_neural_net_train, loss_neural_net_valid, loss_glm_valid

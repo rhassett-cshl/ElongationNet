@@ -31,32 +31,38 @@ def save_results(config_name, config):
        
     full_data = pd.concat([train_data, valid_data, test_data], ignore_index=True)
     full_dl = setup_dataloader(full_data, feature_names, nucleotides, test_batch_size, False, None)
-    
-    bw_df = pd.DataFrame(columns=bw_columns)
 
-    bw_items = []
+    use_ep_linear = model.name == "ep_linear"
+
+    bw_columns = ["Chr", "Start", "End", "Value", "Strand"]
+    bw_data = {col: [] for col in bw_columns}
     with torch.no_grad():
         for batch in full_dl:
             Y_ji = batch['Y_ji'].to(device)
             N_ji = batch['N_ji'].to(device)
             Z_ji = batch['Z_ji'].to(device)
             
-            if model.name == "ep_linear":
+            if use_ep_linear:
                 rho_ji = model(Y_ji)
             else:
                 rho_ji = model(Y_ji, N_ji)    
-            
-            data_dict = {
-                "Chr": batch["Chr"][0].tolist(), # stored as string
-                "Start": batch["Start"][0].tolist(),
-                "End": batch["End"][0].tolist(),
-                "Value": torch.exp(rho_ji.squeeze().cpu()).tolist(),
-                "Strand": batch["Strand"][0].tolist()
-            }
-            bw_items.append(pd.DataFrame(data_dict))
 
-    bw_df = pd.concat(bw_items, ignore_index=True)
     
+    	    bw_data["Chr"].extend(batch["Chr"][0])
+            bw_data["Start"].extend(batch["Start"][0].numpy())
+            bw_data["End"].extend(batch["End"][0].numpy())
+            bw_data["Value"].extend(torch.exp(rho_ji.squeeze().cpu()).numpy())
+            bw_data["Strand"].extend(batch["Strand"][0].numpy())
+
+
+    
+    bw_df = pd.DataFrame(bw_data)
+
+
+    #bw_df = pd.concat(bw_items, ignore_index=True)
+   
+    print("concat results finished")
+ 
     bw_df = process_bigwig_dataframe(bw_df)
     
     save_to_bigwig(bw_df, config_name, config["cell_type"])

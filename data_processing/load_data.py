@@ -4,12 +4,11 @@ import torch
 import torch.nn as nn
 import torch.nn.init as init
 import pickle
-from GeneDataset import GeneDataset
-from GeneBatchSampler import GeneBatchSampler
+from .GeneDataset import GeneDataset
 from torch.utils.data import DataLoader
 
 def read_pickle(cell_type):
-    with open(f'../data/{cell_type}_datasets.pkl', 'rb') as file:
+    with open(f'./data/{cell_type}_datasets.pkl', 'rb') as file:
         combined_datasets = pickle.load(file)
         
     train_data = combined_datasets['train']
@@ -50,10 +49,9 @@ def custom_collate_fn(batch):
     return batched_data
 
 def setup_dataloader(data, feature_names, nucleotides, 
-                     batch_size, use_sliding_window, window_size=None):
+                     batch_size, use_sliding_window, window_size=100, stride=100):
     
-    dataset = GeneDataset(data, feature_names, nucleotides, use_sliding_window, window_size)
-    #batch_sampler = GeneBatchSampler(dataset)
-    loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=7, collate_fn=custom_collate_fn) #batch_sampler=batch_sampler,
+    dataset = GeneDataset(data, feature_names, nucleotides, use_sliding_window, window_size, stride)
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=7, collate_fn=custom_collate_fn)
     
     return loader

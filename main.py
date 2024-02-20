@@ -14,7 +14,7 @@ def main():
 
     args = parser.parse_args()
         
-    with open("./configs" + args.config_name + ".json", 'r') as file:
+    with open("./configs/" + args.config_name + ".json", 'r') as file:
         config = json.load(file)
             
     cuda_available = torch.cuda.is_available()
