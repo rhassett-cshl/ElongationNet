@@ -3,6 +3,7 @@ from models.Ep_Linear import Ep_Linear
 from models.Ep_Allmer_Linear import Ep_Allmer_Linear
 from models.Ep_Allmer_CNN import Ep_Allmer_CNN
 from models.Ep_Allmer_CNN_LSTM import Ep_Allmer_CNN_LSTM
+from models.Ep_Allmer_LSTM import Ep_Allmer_LSTM
 
 def setup_model(config, device, num_ep_features, num_seq_features):
     
@@ -14,6 +15,8 @@ def setup_model(config, device, num_ep_features, num_seq_features):
         model = Ep_Linear(num_ep_features)
     elif config["model_type"] == 'ep_seq_linear':
         model = Ep_Allmer_Linear(num_ep_features, num_seq_features)
+    elif config["model_type"] == 'lstm':
+        model = Ep_Allmer_LSTM(num_ep_features + num_seq_features)
     elif config["model_type"] == 'cnn':
         model = Ep_Allmer_CNN(num_ep_features, num_seq_features, 
                                 config["y_channels"], config["y_kernel_sizes"], 
