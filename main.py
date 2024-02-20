@@ -37,7 +37,8 @@ def main():
         
         sweep_id = wandb.sweep(sweep_config, project=args.config_name)
         wandb.agent(sweep_id, function=sweep_agent)
-    elif args.mode == 'analyze':
+        
+    elif args.mode == 'save_results':
         save_results(args.config_name, config)
     else:
         print("Invalid mode selected. Please choose from 'train', 'sweep', or 'analyze'.")
