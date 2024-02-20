@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-def train_epoch(model, loader, optimizer, loss_fn, l1_lambda):
+def train_epoch(model, loader, device, optimizer, loss_fn, l1_lambda):
     model.train()
     total_loss = 0
     for idx, batch in enumerate(loader):

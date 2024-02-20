@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-def valid_epoch(model, loader, loss_fn):
+def valid_epoch(model, loader, device, loss_fn):
     model.eval()
     total_neural_net_loss = 0
     total_glm_loss = 0
@@ -22,9 +22,7 @@ def valid_epoch(model, loader, loss_fn):
             else:
                 outputs = model(Y_ji_batch, N_ji_batch)
             	
-	    print("neural net")
             neural_net_loss = loss_fn(X_ji_batch, C_j_batch, outputs)
-            print("glm")
             glm_loss = loss_fn(X_ji_batch, C_j_batch, torch.log(Z_ji_batch))
 
             total_neural_net_loss +=  neural_net_loss.item()

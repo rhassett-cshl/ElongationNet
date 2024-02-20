@@ -1,14 +1,16 @@
 import numpy as np
 import pandas as pd
 import torch
-import torch.nn.init as init
 from torch.utils.data import Dataset
 
 """ Process data using a sliding window approach """
 class GeneDataset(Dataset):
-    def __init__(self, dataframe, use_sliding_window=False, window_size=100):
+    def __init__(self, dataframe, feature_names, nucleotides, 
+                 use_sliding_window=False, window_size=100):
         self.dataframe = dataframe
         self.grouped_data = dataframe.groupby('ensembl_gene_id')
+        self.feature_names = feature_names
+        self.nucleotides = nucleotides
         self.use_sliding_window = use_sliding_window
         self.window_size = window_size
         self.cache = {}
@@ -56,7 +58,7 @@ class GeneDataset(Dataset):
             'Strand': strand_tensor,
             
             # epigenomic features per gene j, site i
-            'Y_ji':  torch.tensor(window[feature_names].values, dtype=torch.float64),
+            'Y_ji':  torch.tensor(window[self.feature_names].values, dtype=torch.float64),
             
             # read counts per gene j, site i
             'X_ji': torch.tensor(window['score'].values, dtype=torch.float64),
@@ -68,7 +70,7 @@ class GeneDataset(Dataset):
             'Z_ji': torch.tensor(window['combined_zeta'].values, dtype=torch.float64),
             
             # one-hot encoded sequences
-            'N_ji': torch.tensor(window[nucleotides].values, dtype=torch.float64)
+            'N_ji': torch.tensor(window[self.nucleotides].values, dtype=torch.float64)
         }
     
         self.cache[gene_id] = result
