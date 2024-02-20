@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from utilities.match_list_lengths import match_list_lengths
+from .utilities.match_list_lengths import match_list_lengths
 
 class Ep_Allmer_CNN(nn.Module):
     def __init__(self, num_ep_features, num_seq_features, 

@@ -10,4 +10,4 @@
 #$ -l gpu=1
 #$ -pe threads 8
 
-python -u elongation_epAllmer_net.py
+python -u main.py --mode=train --config_name=cnn3
