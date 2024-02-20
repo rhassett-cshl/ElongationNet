@@ -11,7 +11,7 @@ nucleotides = ['A', 'T', 'G', 'C']
 test_batch_size = 1
 bw_columns = ['Chr', 'Start', 'End', 'Value', 'Strand']
 
-def save_results(cell_type, config_name, config):
+def save_results(config_name, config):
     train_data, valid_data, test_data = read_pickle(config["cell_type"])
 
     column_names = np.array(train_data.columns)
@@ -59,4 +59,4 @@ def save_results(cell_type, config_name, config):
     
     bw_df = process_bigwig_dataframe(bw_df)
     
-    save_to_bigwig(bw_df, config_name, cell_type)
+    save_to_bigwig(bw_df, config_name, config["cell_type"])

@@ -10,7 +10,6 @@ from sweep_agent import sweep_agent
 def main():
     parser = argparse.ArgumentParser(description="Elongation Net")
     parser.add_argument("--mode", choices=['train', 'sweep', 'save_results'], required=True, help="Operation mode: train, sweep, or save_results")
-    parser.add_argument("--cell_type", choices=['k562', 'cd14', 'hela', 'mcf7'], required=True, help="Cell type: k562, cd14, hela, or mcf7")
     parser.add_argument("--config_name", required=True, help="Config name: Name of config file")
 
     args = parser.parse_args()
@@ -39,7 +38,7 @@ def main():
         sweep_id = wandb.sweep(sweep_config, project=args.config_name)
         wandb.agent(sweep_id, function=sweep_agent)
     elif args.mode == 'analyze':
-        save_results(args.cell_type, args.config_name, config)
+        save_results(args.config_name, config)
     else:
         print("Invalid mode selected. Please choose from 'train', 'sweep', or 'analyze'.")
 
