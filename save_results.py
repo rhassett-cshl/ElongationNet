@@ -47,8 +47,7 @@ def save_results(config_name, config):
             else:
                 rho_ji = model(Y_ji, N_ji)    
 
-    
-    	    bw_data["Chr"].extend(batch["Chr"][0])
+            bw_data["Chr"].extend(batch["Chr"][0])
             bw_data["Start"].extend(batch["Start"][0].numpy())
             bw_data["End"].extend(batch["End"][0].numpy())
             bw_data["Value"].extend(torch.exp(rho_ji.squeeze().cpu()).numpy())
