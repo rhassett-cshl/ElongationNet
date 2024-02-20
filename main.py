@@ -9,7 +9,7 @@ from sweep_agent import sweep_agent
 
 def main():
     parser = argparse.ArgumentParser(description="Elongation Net")
-    parser.add_argument("--mode", choices=['train', 'sweep', 'save_bigwig'], required=True, help="Operation mode: train, sweep, or analyze")
+    parser.add_argument("--mode", choices=['train', 'sweep', 'save_results'], required=True, help="Operation mode: train, sweep, or analyze")
     parser.add_argument("--cell_type", choices=['k562', 'cd14', 'hela', 'mcf7'], required=True, help="Cell type: k562, cd14, hela, or mcf7")
     parser.add_argument("--config_name", required=True, help="Config name: Name of config file")
 
