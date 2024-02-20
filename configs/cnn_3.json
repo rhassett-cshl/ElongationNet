@@ -1,4 +1,5 @@
 {
+    "cell_type": "k562",
     "model_type": "cnn",
     "y_channels": [16],
     "y_kernel_sizes": [9],
