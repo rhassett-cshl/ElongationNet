@@ -1,4 +1,7 @@
 .ipynb_checkpoints/
 wandb/
 data/
-
+bigwig_utilities/example_files/
+results/*/*.bw
+output.txt
+errors.txt
