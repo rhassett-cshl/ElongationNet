@@ -21,6 +21,8 @@ def train_model(use_wandb, config_name, config):
         
     cuda_available = torch.cuda.is_available()
     device = torch.device("cuda" if cuda_available else "cpu")
+    print(cuda_available)
+    print(device)
         
     train_data, valid_data, test_data = read_pickle(config["cell_type"])
     
@@ -32,6 +34,8 @@ def train_model(use_wandb, config_name, config):
     num_seq_features = len(nucleotides)
     print("Number of Samples: " + str(num_samples))
     print("Number of Epigenomic Features: " + str(num_ep_features))
+
+    torch.backends.cudnn.benchmark = True
 
     model = setup_model(config, device, num_ep_features, num_seq_features)
     
@@ -52,7 +56,9 @@ def train_model(use_wandb, config_name, config):
     
     optimizer = optim.Adam(model.parameters(), lr=config['learning_rate'], weight_decay=config['l2_lambda'])
         
-    loss_fn = CustomLoss()
+    #loss_fn = CustomLoss()
+
+    loss_fn = torch.jit.script(CustomLoss())
 
     # track loss curves
     loss_neural_net_train = [0] * config["epochs"]
