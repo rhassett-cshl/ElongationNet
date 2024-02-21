@@ -13,13 +13,14 @@ def train_epoch(model, loader, device, optimizer, loss_fn, l1_lambda):
         X_ji_batch = batch['X_ji'].to(device)
         N_ji_batch = batch['N_ji'].to(device) 
         C_j_batch = batch['C_j'].to(device).unsqueeze(1)
+        Mask = batch['Mask'].to(device)
         
         if model.name == "ep_linear":
             outputs = model(Y_ji_batch)
         else:
             outputs = model(Y_ji_batch, N_ji_batch)
 
-        loss = loss_fn(X_ji_batch, C_j_batch, outputs)
+        loss = loss_fn(X_ji_batch, C_j_batch, outputs, Mask)
 
         if l1_lambda != 0:
             l1_norm = sum(torch.abs(p).sum() for p in model.parameters())

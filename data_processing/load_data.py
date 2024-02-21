@@ -5,7 +5,10 @@ import torch.nn as nn
 import torch.nn.init as init
 import pickle
 from .GeneDataset import GeneDataset
+from .BucketBatchSampler import BucketBatchSampler
+from .BucketGeneDataset import BucketGeneDataset
 from torch.utils.data import DataLoader
+from torch.nn.utils.rnn import pad_sequence
 
 def read_pickle(cell_type):
     with open(f'./data/{cell_type}_datasets.pkl', 'rb') as file:
@@ -48,10 +51,41 @@ def custom_collate_fn(batch):
     
     return batched_data
 
-def setup_dataloader(data, feature_names, nucleotides, 
-                     batch_size, use_sliding_window, window_size=100, stride=100):
+def padded_collate_fn(batch):
+    GeneIds, Seq_Names, Start, End, Strand, C_j, Lengths = zip(*[(item['GeneId'], item['Seq_Name'], item['Start'], item['End'], item['Strand'], item['C_j'], item['Length']) for item in batch])
     
-    dataset = GeneDataset(data, feature_names, nucleotides, use_sliding_window, window_size, stride)
-    loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=7, collate_fn=custom_collate_fn)
+    Y_ji = pad_sequence([item['Y_ji'] for item in batch], batch_first=True, padding_value=0.0)
+    X_ji = pad_sequence([item['X_ji'] for item in batch], batch_first=True, padding_value=0.0)
+    Z_ji = pad_sequence([item['Z_ji'] for item in batch], batch_first=True, padding_value=1.0)
+    N_ji = pad_sequence([item['N_ji'] for item in batch], batch_first=True, padding_value=-1)
+    
+    longest_seq_length = torch.arange(X_ji.size(1)).unsqueeze(0)
+    seq_lengths = torch.tensor(Lengths).unsqueeze(-1) 
+    mask = longest_seq_length < seq_lengths
+    
+    return {
+        'GeneId': GeneIds,
+        'Seq_Name': Seq_Names,
+        'Start': Start,
+        'End': End,
+        'Strand': Strand,
+        'Y_ji': Y_ji,
+        'X_ji': X_ji,
+        'C_j': torch.stack(C_j).unsqueeze(1),
+        'Z_ji': Z_ji,
+        'N_ji': N_ji,
+        'Mask': mask,
+        'Length': len(X_ji[0])
+    }
+
+def setup_dataloader(data, feature_names, nucleotides, 
+                     batch_size, use_sliding_window, window_size=100):
+    
+    #dataset = GeneDataset(data, feature_names, nucleotides, use_sliding_window, window_size)
+    #loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=7, collate_fn=custom_collate_fn)
+    
+    dataset = BucketGeneDataset(data, feature_names, nucleotides)
+    batch_sampler = BucketBatchSampler(dataset, 64, 2000)
+    loader = DataLoader(dataset, batch_sampler=batch_sampler, num_workers=7, collate_fn=padded_collate_fn)
     
     return loader

@@ -6,14 +6,13 @@ from torch.utils.data import Dataset
 """ Process data using a sliding window approach """
 class GeneDataset(Dataset):
     def __init__(self, dataframe, feature_names, nucleotides, 
-                 use_sliding_window=False, window_size=100, stride=100):
+                 use_sliding_window=False, window_size=100):
         self.dataframe = dataframe
         self.grouped_data = dataframe.groupby('ensembl_gene_id')
         self.feature_names = feature_names
         self.nucleotides = nucleotides
         self.use_sliding_window = use_sliding_window
         self.window_size = window_size
-        self.stride = stride
         self.cache = {}
         self.windows = []
 
@@ -27,7 +26,7 @@ class GeneDataset(Dataset):
     def _create_windows(self):
         for gene_id, group in self.grouped_data:
             gene_length = len(group)
-            for start_idx in range(0, gene_length - self.window_size + 1, self.stride):
+            for start_idx in range(0, gene_length - self.window_size + 1, self.window_size):
                 end_idx = start_idx + self.window_size
                 if end_idx > gene_length:
                     break

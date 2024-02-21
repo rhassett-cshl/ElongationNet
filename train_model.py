@@ -8,13 +8,14 @@ from setup_model import setup_model
 from train_epoch import train_epoch
 from validation_epoch import valid_epoch
 from loss import CustomLoss
+from bucket_loss import BucketLoss
 from data_processing.load_data import setup_dataloader, read_pickle
 
 increase_cut=0.00001
 patience=5
 
 nucleotides = ['A', 'T', 'G', 'C']
-#train_batch_size = 32
+train_batch_size = 32#64
 valid_batch_size = 1
 
 def train_model(use_wandb, config_name, config):
@@ -40,25 +41,22 @@ def train_model(use_wandb, config_name, config):
     model = setup_model(config, device, num_ep_features, num_seq_features)
     
     train_window_size = None
-    train_stride = None
-    train_batch_size = config["train_batch_size"]
     if config["train_use_sliding_window"]:
         train_window_size = config["train_window_size"]
-        train_stride = config["train_stride"]
-    train_loader = setup_dataloader(train_data, feature_names, nucleotides, train_batch_size, config["train_use_sliding_window"], train_window_size, train_stride)
+    train_loader = setup_dataloader(train_data, feature_names, nucleotides, train_batch_size, config["train_use_sliding_window"], train_window_size)
     
     valid_window_size = None
-    valid_stride = None
     if config["valid_use_sliding_window"]:
         valid_window_size = config["valid_window_size"]
-        valid_stride = config["valid_stride"]
-    valid_loader = setup_dataloader(valid_data, feature_names, nucleotides, valid_batch_size, config["valid_use_sliding_window"], valid_window_size, valid_stride)
+    valid_loader = setup_dataloader(valid_data, feature_names, nucleotides, valid_batch_size, config["valid_use_sliding_window"], valid_window_size)
     
     optimizer = optim.Adam(model.parameters(), lr=config['learning_rate'], weight_decay=config['l2_lambda'])
         
     #loss_fn = CustomLoss()
 
-    loss_fn = torch.jit.script(CustomLoss())
+    #loss_fn = torch.jit.script(CustomLoss())
+
+    loss_fn = BucketLoss()
 
     # track loss curves
     loss_neural_net_train = [0] * config["epochs"]
