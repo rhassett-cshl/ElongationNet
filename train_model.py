@@ -15,7 +15,7 @@ increase_cut=0.00001
 patience=5
 
 nucleotides = ['A', 'T', 'G', 'C']
-train_batch_size = 32#64
+train_batch_size = 128#64
 valid_batch_size = 1
 
 def train_model(use_wandb, config_name, config):
@@ -56,7 +56,7 @@ def train_model(use_wandb, config_name, config):
 
     #loss_fn = torch.jit.script(CustomLoss())
 
-    loss_fn = BucketLoss()
+    loss_fn = torch.jit.script(BucketLoss())
 
     # track loss curves
     loss_neural_net_train = [0] * config["epochs"]

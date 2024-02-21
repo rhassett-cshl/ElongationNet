@@ -85,7 +85,7 @@ def setup_dataloader(data, feature_names, nucleotides,
     #loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=7, collate_fn=custom_collate_fn)
     
     dataset = BucketGeneDataset(data, feature_names, nucleotides)
-    batch_sampler = BucketBatchSampler(dataset, 64, 2000)
+    batch_sampler = BucketBatchSampler(dataset, 128, 25)
     loader = DataLoader(dataset, batch_sampler=batch_sampler, num_workers=7, collate_fn=padded_collate_fn)
     
     return loader

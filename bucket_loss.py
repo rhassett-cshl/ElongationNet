@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 
 class BucketLoss(nn.Module):
     def __init__(self):

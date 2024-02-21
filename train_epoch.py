@@ -15,6 +15,8 @@ def train_epoch(model, loader, device, optimizer, loss_fn, l1_lambda):
         C_j_batch = batch['C_j'].to(device).unsqueeze(1)
         Mask = batch['Mask'].to(device)
         
+        print(X_ji_batch.shape)
+
         if model.name == "ep_linear":
             outputs = model(Y_ji_batch)
         else:

@@ -28,7 +28,7 @@ class BucketGeneDataset(Dataset):
             'Strand': gene['strand'],
             
             # epigenomic features per gene j, site i
-            'Y_ji':  torch.tensor(gene[feature_names].values, dtype=torch.float64),
+            'Y_ji':  torch.tensor(gene[self.feature_names].values, dtype=torch.float64),
             
             # read counts per gene j, site i
             'X_ji': torch.tensor(gene['score'].values, dtype=torch.float64),
@@ -40,7 +40,7 @@ class BucketGeneDataset(Dataset):
             'Z_ji': torch.tensor(gene['zeta'].values, dtype=torch.float64),
             
             # one-hot encoded sequences
-            'N_ji': torch.tensor(gene[nucleotides].values, dtype=torch.float64), 
+            'N_ji': torch.tensor(gene[self.nucleotides].values, dtype=torch.float64), 
             'Length': len(gene)
         }
     
