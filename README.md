@@ -13,6 +13,9 @@
 
 * Load model and save predictions to bigwig file:
   - python main.py --mode=save_results --config_name=cnn_2
+ 
+* Hyperparameter sweep using wandb:
+  - python main.py --mode=sweep --config_name=cnn_2
 
  * Submit job to job scheduler
   - Example in submit_job.sh
