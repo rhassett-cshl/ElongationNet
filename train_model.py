@@ -15,7 +15,7 @@ increase_cut=0.00001
 patience=5
 
 nucleotides = ['A', 'T', 'G', 'C']
-train_batch_size = 128#64
+train_batch_size = 64
 valid_batch_size = 1
 
 def train_model(use_wandb, config_name, config):
@@ -52,11 +52,10 @@ def train_model(use_wandb, config_name, config):
     
     optimizer = optim.Adam(model.parameters(), lr=config['learning_rate'], weight_decay=config['l2_lambda'])
         
-    #loss_fn = CustomLoss()
+    loss_fn = torch.jit.script(CustomLoss())
 
-    #loss_fn = torch.jit.script(CustomLoss())
-
-    loss_fn = torch.jit.script(BucketLoss())
+    # for bucketing input
+    #loss_fn = torch.jit.script(BucketLoss())
 
     # track loss curves
     loss_neural_net_train = [0] * config["epochs"]

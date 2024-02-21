@@ -6,11 +6,10 @@ class CustomLoss(nn.Module):
         super(CustomLoss, self).__init__()
 
     def forward(self, X_ji, C_j, rho_ji):
-        large_rho = X_ji * rho_ji
-        small_rho = C_j * torch.exp(-rho_ji)
-        constant_term = X_ji * torch.log(C_j)
-        loss = large_rho + small_rho - constant_term
-        #print(f"Large:{large_rho.mean()}\nSmall:{small_rho.mean()}\nConstant:{constant_term.mean()}")
+        term1 = X_ji * rho_ji
+        term2 = C_j * torch.exp(-rho_ji)
+        term3 = X_ji * torch.log(C_j)
+        loss = term1 + term2 - term3
         
         # calculate average loss per site
         return (loss).mean()

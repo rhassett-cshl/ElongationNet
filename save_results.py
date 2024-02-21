@@ -54,14 +54,8 @@ def save_results(config_name, config):
             bw_data["Strand"].extend(batch["Strand"][0].numpy())
 
 
-    
     bw_df = pd.DataFrame(bw_data)
-
-
-    #bw_df = pd.concat(bw_items, ignore_index=True)
-   
-    print("concat results finished")
- 
+    
     bw_df = process_bigwig_dataframe(bw_df)
     
     save_to_bigwig(bw_df, config_name, config["cell_type"])

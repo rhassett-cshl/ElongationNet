@@ -81,11 +81,13 @@ def padded_collate_fn(batch):
 def setup_dataloader(data, feature_names, nucleotides, 
                      batch_size, use_sliding_window, window_size=100):
     
-    #dataset = GeneDataset(data, feature_names, nucleotides, use_sliding_window, window_size)
-    #loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=7, collate_fn=custom_collate_fn)
+    dataset = GeneDataset(data, feature_names, nucleotides, use_sliding_window, window_size)
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=7, collate_fn=custom_collate_fn)
     
+    """
     dataset = BucketGeneDataset(data, feature_names, nucleotides)
     batch_sampler = BucketBatchSampler(dataset, 128, 25)
     loader = DataLoader(dataset, batch_sampler=batch_sampler, num_workers=7, collate_fn=padded_collate_fn)
+    """
     
     return loader

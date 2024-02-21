@@ -16,10 +16,6 @@ def main():
         
     with open("./configs/" + args.config_name + ".json", 'r') as file:
         config = json.load(file)
-            
-    cuda_available = torch.cuda.is_available()
-    
-    device = torch.device("cuda" if cuda_available else "cpu")
     
     if args.mode == 'train':
         train_model(False, args.config_name, config)

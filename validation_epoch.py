@@ -16,15 +16,15 @@ def valid_epoch(model, loader, device, loss_fn):
             N_ji_batch = batch['N_ji'].to(device) 
             C_j_batch = batch['C_j'].to(device).unsqueeze(1)
             Z_ji_batch = batch['Z_ji'].to(device)
-            Mask = batch['Mask'].to(device)
+            #Mask = batch['Mask'].to(device) # for bucketing input
             
             if model.name == "ep_linear":
                 outputs = model(Y_ji_batch)
             else:
                 outputs = model(Y_ji_batch, N_ji_batch)
             	
-            neural_net_loss = loss_fn(X_ji_batch, C_j_batch, outputs, Mask)
-            glm_loss = loss_fn(X_ji_batch, C_j_batch, torch.log(Z_ji_batch), Mask)
+            neural_net_loss = loss_fn(X_ji_batch, C_j_batch, outputs)#, Mask)
+            glm_loss = loss_fn(X_ji_batch, C_j_batch, torch.log(Z_ji_batch))#, Mask)
 
             total_neural_net_loss +=  neural_net_loss.item()
             total_glm_loss += glm_loss.item()
