@@ -2,6 +2,8 @@
 wandb/
 data/
 bigwig_utilities/example_files/
+elongation_net/
 results/*/*.bw
 output.txt
 errors.txt
+**/__pycache__/
