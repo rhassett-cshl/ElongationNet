@@ -3,34 +3,32 @@ from torch.utils.data import BatchSampler, DataLoader, Dataset
 import numpy as np
 
 class BucketBatchSampler(BatchSampler):
-    def __init__(self, dataset, batch_size, n_buckets=None):
+    def __init__(self, dataset, batch_size, bucket_size=2000):
         self.dataset = dataset
         self.batch_size = batch_size
-        self.n_buckets = n_buckets or 10  # Default to 10 buckets if not specified
+        self.bucket_size = bucket_size
 
-        lengths = torch.tensor([dataset[i]['Length'] for i in range(len(dataset))], dtype=torch.float)
-
-        # Dynamically compute bucket boundaries based on quantiles to ensure an even distribution
-        boundaries = torch.quantile(lengths, torch.linspace(0, 1, steps=self.n_buckets + 1))
-        self.boundaries = boundaries.unique()  # Remove duplicate boundaries
-
-        # Update n_buckets in case there are fewer unique boundaries than requested buckets
-        self.n_buckets = len(self.boundaries) - 1
-
-        # Get bucket index for each sequence based on seq length
+        lengths = torch.tensor([dataset[i]['Length'] for i in range(len(dataset))])
+        max_length = lengths.max_length().item()
+        min_length = lengths.min().item()
+        
+        # calculate number of buckets from min seq length to max seq length with size bucket_size
+        self.n_buckets = ((max_length - min_length) // bucket_size) + 1
+        self.boundaries = torch.arange(min_length, max_length + bucket_size, step=bucket_size)
+        
+        # get bucket index for each sequence based on seq length
         self.bucket_indices = torch.bucketize(lengths, self.boundaries, right=True)
 
-        # Efficient grouping of indices into buckets
+        # Group indices into buckets
         self.buckets = [torch.where(self.bucket_indices == i + 1)[0].tolist() for i in range(self.n_buckets)]
 
     def __iter__(self):
+        # form batches from bucketed data
         for bucket in self.buckets:
-            # Shuffle data at the bucket level
-            np.random.shuffle(bucket)
             for batch in BatchSampler(torch.utils.data.SubsetRandomSampler(bucket), self.batch_size, drop_last=False):
                 yield batch
 
+    # calculate number of batches created
     def __len__(self):
         # Include partial batch in calculation
         return sum((len(bucket) + self.batch_size - 1) // self.batch_size for bucket in self.buckets)
-
