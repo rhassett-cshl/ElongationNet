@@ -10,4 +10,4 @@
 #$ -l gpu=1
 #$ -pe threads 8
 
-python -u main.py --mode=train --config_name=cnn_stride
+python -u main.py --mode=train --config_name=cnn_2
