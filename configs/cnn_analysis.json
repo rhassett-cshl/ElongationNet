@@ -1,5 +1,5 @@
 {
-    "cell_type": "k562",
+    "cell_type": "k562_analysis",
     "model_type": "cnn",
     "y_channels": [
         16
