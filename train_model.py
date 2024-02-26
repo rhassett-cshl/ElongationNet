@@ -48,6 +48,9 @@ def train_model(use_wandb, config_name, config):
     valid_window_size = None
     if config["valid_use_sliding_window"]:
         valid_window_size = config["valid_window_size"]
+    
+    if valid_data.empty == True:
+        valid_data = test_data
     valid_loader = setup_dataloader(valid_data, feature_names, nucleotides, valid_batch_size, config["valid_use_sliding_window"], valid_window_size)
     
     optimizer = optim.Adam(model.parameters(), lr=config['learning_rate'], weight_decay=config['l2_lambda'])
@@ -70,7 +73,7 @@ def train_model(use_wandb, config_name, config):
     for epoch in range(config["epochs"]):
         print(f'Epoch {epoch+1}')
         
-        train_loss, glm_train_loss = train_epoch(model, train_loader, device, optimizer, loss_fn, config['l1_lambda'])
+        train_loss = train_epoch(model, train_loader, device, optimizer, loss_fn, config['l1_lambda'])
         loss_neural_net_train[epoch] = train_loss
         print(f"train loss: {train_loss: .5f}")
         

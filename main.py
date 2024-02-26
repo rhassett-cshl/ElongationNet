@@ -10,7 +10,7 @@ from sweep_agent import sweep_agent
 
 def main():
     parser = argparse.ArgumentParser(description="Elongation Net")
-    parser.add_argument("--mode", choices=['train', 'sweep', 'save_results', 'analysis'], required=True, help="Operation mode: train, sweep, save_results, or analysis")
+    parser.add_argument("--mode", choices=['train', 'sweep', 'save_results'], required=True, help="Operation mode: train, sweep, save_results, or analysis")
     parser.add_argument("--config_name", required=True, help="Config name: Name of config file")
 
     args = parser.parse_args()
@@ -20,8 +20,6 @@ def main():
     
     if args.mode == 'train':
         train_model(False, args.config_name, config)
-    elif args.mode == 'analysis':
-        test_model(False, args.config_name, config)
     elif args.mode == 'sweep':
 
         sweep_config = {
