@@ -52,6 +52,9 @@ def save_results(config_name, config):
             bw_data["End"].extend(batch["End"][0].numpy())
             bw_data["Value"].extend(torch.exp(rho_ji.squeeze().cpu()).numpy())
             bw_data["Strand"].extend(batch["Strand"][0].numpy())
+            
+
+    # predicted X_ji = C_j / Z_ji
 
 
     bw_df = pd.DataFrame(bw_data)

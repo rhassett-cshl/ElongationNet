@@ -3,9 +3,10 @@ import torch.nn as nn
 from .utilities.match_list_lengths import match_list_lengths
 
 class Ep_Allmer_Residual(nn.Module):
-    def __init__(self, input_shape, output_shape, bottleneck=8, activation_fn=nn.ReLU):
+    def __init__(self, num_ep_features, num_seq_features, window_size, bottleneck=8, activation_fn=nn.ReLU):
         super(Ep_Allmer_Residual, self).__init__()
-        output_len, 1 = output_shape
+        output_len = window_size
+        num_output_features = 1
         self.conv1 = nn.Conv1d(in_channels=(num_ep_features + num_seq_features), out_channels=192, kernel_size=19, padding='same')
         self.bn1 = nn.BatchNorm1d(192)
         self.activation1 = activation_fn()
