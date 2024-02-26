@@ -18,7 +18,7 @@ nucleotides = ['A', 'T', 'G', 'C']
 train_batch_size = 64
 valid_batch_size = 1
 
-def train_model(use_wandb, config_name, config):
+def test_model(use_wandb, config_name, config):
         
     cuda_available = torch.cuda.is_available()
     device = torch.device("cuda" if cuda_available else "cpu")
