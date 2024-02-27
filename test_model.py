@@ -10,7 +10,7 @@ from load_model_checkpoint import load_model_checkpoint
 from data_processing.load_data import read_pickle, setup_dataloader
 from loss_debug import CustomLoss
 
-config_name = "cnn_2" # ep_seq_linear_1
+config_name = "ep_seq_linear_1"  #"cnn_2" # ep_seq_linear_1
 
 with open("./configs/" + config_name + ".json", 'r') as file:
     config = json.load(file)
@@ -60,10 +60,11 @@ with torch.no_grad():
 
         csv_data["Chr"].extend(batch["Chr"][0])
         csv_data["Start"].extend(batch["Start"][0].numpy())
+        csv_data["Rho_ji"].extend(rho_ji.squeeze().cpu().numpy())
         csv_data["CNN_Zeta"].extend(torch.exp(rho_ji.squeeze().cpu()).numpy())
         csv_data["GLM_Combined_Zeta"].extend(batch["Z_ji"][0].numpy())
         csv_data["Strand"].extend(batch["Strand"][0].numpy())
-        csv_data["Loss"].extend(loss_items.numpy())
+        csv_data["Loss"].extend(loss_items[0].numpy())
         csv_data["Expected_X_ji"].extend(batch["X_ji"][0].numpy())
 
         csv_data["C_j"].extend([batch["C_j"][0].numpy()] * batch_size)
