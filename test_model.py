@@ -40,7 +40,7 @@ test_dl = setup_dataloader(test_data, feature_names, nucleotides, test_batch_siz
 
 loss_fn = CustomLoss()
 
-csv_columns = ["Chr", "Start", "Strand", "GeneId", "Expected_X_ji", "C_j", "CNN_Zeta", "Loss", "GLM_Combined_Zeta", "Predicted_X_ji"]
+csv_columns = ["Chr", "Start", "Strand", "GeneId", "Expected_X_ji", "C_j", "CNN_Zeta", "Loss", "GLM_Combined_Zeta"]#, "Predicted_X_ji"]
 csv_data = {col: [] for col in csv_columns}
 with torch.no_grad():
     for idx, batch in enumerate(test_dl):
@@ -69,9 +69,9 @@ with torch.no_grad():
         csv_data["C_j"].extend([batch["C_j"][0].numpy()] * batch_size)
         csv_data["GeneId"].extend([batch["GeneId"][0]] * batch_size)
 
-        predicted_xji = ([batch["C_j"][0].numpy()] * batch_size) / batch["Z_ji"][0].numpy()
+        #predicted_xji = ([batch["C_j"][0].numpy()] * batch_size) / batch["Z_ji"][0].numpy()
 
-        csv_data["Predicted_X_ji"].extend(predicted_xji)
+        #csv_data["Predicted_X_ji"].extend(predicted_xji)
 
         
 
