@@ -30,14 +30,18 @@ def save_results(config_name, config):
     model.eval()
        
     full_data = pd.concat([train_data, valid_data, test_data], ignore_index=True)
-    full_dl = setup_dataloader(full_data, feature_names, nucleotides, test_batch_size, False, None)
+    full_dl = setup_dataloader(test_data, feature_names, nucleotides, test_batch_size, False, None)
 
     use_ep_linear = model.name == "ep_linear"
 
     bw_columns = ["Chr", "Start", "End", "Value", "Strand"]
+    csv_columns = ["Chr", "Start", "End", "Zeta", "Strand", "Expected_X_ji", "C_j", "GeneId", "Predicted_X_ji"]
     bw_data = {col: [] for col in bw_columns}
+    csv_data = {col: [] for col in csv_columns}
     with torch.no_grad():
-        for batch in full_dl:
+        for idx, batch in enumerate(full_dl):
+            if idx % 100 == 0:
+                print("calculating..")
             Y_ji = batch['Y_ji'].to(device)
             N_ji = batch['N_ji'].to(device)
             Z_ji = batch['Z_ji'].to(device)
@@ -53,9 +57,32 @@ def save_results(config_name, config):
             bw_data["Value"].extend(torch.exp(rho_ji.squeeze().cpu()).numpy())
             bw_data["Strand"].extend(batch["Strand"][0].numpy())
             
+            batch_size = len(batch["Start"][0])
+
+            csv_data["Chr"].extend(batch["Chr"][0])
+            csv_data["Start"].extend(batch["Start"][0].numpy())
+            csv_data["End"].extend(batch["End"][0].numpy())
+            csv_data["CNN_Zeta"].extend(torch.exp(rho_ji.squeeze().cpu()).numpy())
+            csv_data["GLM_Combined_Zeta"].extend(batch["Z_ji"][0].numpy())
+            csv_data["Strand"].extend(batch["Strand"][0].numpy())
+            csv_data["Expected_X_ji"].extend(batch["X_ji"][0].numpy())
+
+            csv_data["C_j"].extend([batch["C_j"][0].numpy()] * batch_size)
+            csv_data["GeneId"].extend([batch["GeneId"][0]] * batch_size)
+
+            predicted_xji = ([batch["C_j"][0].numpy()] * batch_size) / batch["Z_ji"][0].numpy()
+
+            csv_data["Predicted_X_ji"].extend(predicted_xji)
+
+            
 
     # predicted X_ji = C_j / Z_ji
 
+    csv_df = pd.DataFrame(csv_data)
+
+    csv_df.to_csv(f'./results/{config_name}/predictions.csv', index=False)
+
+    print("converted to csv file")
 
     bw_df = pd.DataFrame(bw_data)
     

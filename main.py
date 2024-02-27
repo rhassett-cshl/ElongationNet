@@ -3,7 +3,6 @@ import json
 import wandb
 import torch
 from train_model import train_model
-from test_model import test_model
 from save_results import save_results
 from sweep_agent import sweep_agent
 
