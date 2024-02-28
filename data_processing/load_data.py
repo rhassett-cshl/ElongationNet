@@ -31,6 +31,7 @@ def custom_collate_fn(batch):
     X_ji = torch.stack([item['X_ji'] for item in batch])
     C_j = torch.stack([item['C_j'] for item in batch])
     Z_ji = torch.stack([item['Z_ji'] for item in batch])
+    epft_Z_ji = torch.stack([item['epft_Z_ji'] for item in batch])
     N_ji = torch.stack([item['N_ji'] for item in batch])
     
     # Handling lists of strings
@@ -46,6 +47,7 @@ def custom_collate_fn(batch):
         'X_ji': X_ji,
         'C_j': C_j,
         'Z_ji': Z_ji,
+        'epft_Z_ji': epft_Z_ji,
         'N_ji': N_ji
     }
     

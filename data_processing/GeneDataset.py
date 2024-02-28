@@ -70,7 +70,9 @@ class GeneDataset(Dataset):
             'Z_ji': torch.tensor(window['combined_zeta'].values, dtype=torch.float64),
             
             # one-hot encoded sequences
-            'N_ji': torch.tensor(window[self.nucleotides].values, dtype=torch.float64)
+            'N_ji': torch.tensor(window[self.nucleotides].values, dtype=torch.float64),
+            
+            'epft_Z_ji': torch.tensor(window['zeta'].values, dtype=torch.float64)
         }
     
         self.cache[gene_id] = result
