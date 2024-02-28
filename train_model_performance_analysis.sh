@@ -7,7 +7,7 @@
 #$ -S /bin/bash
 #$ -l h_rt=1:00:00
 #$ -l h_vmem=500G
-#$ -l gpu=1
+#$ -l gpu=0
 #$ -pe threads 8
 
 python -u main.py --mode=performance_analysis --config_name=cnn_performance_analysis
