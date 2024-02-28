@@ -12,6 +12,6 @@
     "train_use_sliding_window": true,
     "train_window_size": 100,
     "valid_use_sliding_window": false,
-    "epochs": 300,
+    "epochs": 20,
     "wandb_logging": false
 }

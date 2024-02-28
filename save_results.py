@@ -40,7 +40,7 @@ def save_results(config_name, config):
     loss_fn = CustomLoss()
 
     bw_columns = ["Chr", "Start", "End", "Value", "Strand"]
-    csv_columns = ["Chr", "Start", "End", "Strand", "GeneId", "X_ji", "C_j", "Predicted_Zeta", "GLM_Combined_Zeta", "GLM_Epft_Zeta"]
+    csv_columns = ["Chr", "Start", "End", "Strand", "GeneId", "X_ji", "C_j", "Predicted_Zeta", "GLM_Combined_Zeta", "GLM_Epft_Zeta", "Loss"]
     bw_data = {col: [] for col in bw_columns}
     csv_data = {col: [] for col in csv_columns}
     with torch.no_grad():
