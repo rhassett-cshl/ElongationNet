@@ -12,7 +12,7 @@ from data_processing.load_data import setup_dataloader, read_pickle
 
 """ Remove validation loop since no validation data for performance analysis  """
 
-increase_cut=0.00001
+increase_cut=0.0001 #0.00001
 patience=5
 
 nucleotides = ['A', 'T', 'G', 'C']
