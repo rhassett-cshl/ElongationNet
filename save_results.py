@@ -57,7 +57,10 @@ def save_results(config_name, config):
             else:
                 rho_ji = model(Y_ji, N_ji) 
                 
-            avg_loss, loss_items = loss_fn(X_ji, C_j, rho_ji)   
+            avg_loss, loss_items = loss_fn(X_ji, C_j, rho_ji) 
+            print(f"CNN Avg Test Loss: {avg_loss}\n")  
+            avg_loss2, loss_items = loss_fn(X_ji, C_j, torch.log(batch["Z_ji"][0])) 
+            print(f"GLM Avg Test Loss: {avg_loss2}\n")  
 
             if save_bigwig:
                 bw_data["Chr"].extend(batch["Chr"][0])
