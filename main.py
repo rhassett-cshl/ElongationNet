@@ -3,6 +3,7 @@ import json
 import wandb
 import torch
 from train_model import train_model
+from train_model_performance_analysis import train_model_performance_analysis
 from save_results import save_results
 from sweep_agent import sweep_agent
 
@@ -36,6 +37,8 @@ def main():
         
     elif args.mode == 'save_results':
         save_results(args.config_name, config)
+    elif args.mode == 'performance_analysis':
+        train_model_performance_analysis(False, args.config_name, config)
     else:
         print("Invalid mode selected. Please choose from 'train', 'sweep', or 'analyze'.")
 

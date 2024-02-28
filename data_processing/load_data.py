@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
 
 def read_pickle(cell_type):
-    with open(f'./data/{cell_type}_datasets.pkl', 'rb') as file:
+    with open(f'./data/{cell_type}_performance_analysis_datasets.pkl', 'rb') as file:
         combined_datasets = pickle.load(file)
         
     train_data = combined_datasets['train']
