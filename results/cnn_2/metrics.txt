@@ -1,5 +1,0 @@
-Neural Net Loss: 0.1302
-GLM Loss: 0.1460
-Correlation Coefficient: 0.2077
-Mean Absolute Error: 1.6041
-Mean Squared Error: 9.9530
