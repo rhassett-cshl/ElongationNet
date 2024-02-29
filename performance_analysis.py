@@ -72,5 +72,4 @@ zeta_description = df["Predicted_Zeta"].describe()
 with open(metrics_file, 'a') as f:
     f.write(f"MSE {mse}\n")
     f.write(f"R2 {r2}\n")
-    f.write(f"MSE/R2 {mse / r2}\n")
     f.write(zeta_description.to_string())
