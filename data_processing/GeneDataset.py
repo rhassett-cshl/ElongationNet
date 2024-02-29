@@ -64,7 +64,7 @@ class GeneDataset(Dataset):
             'X_ji': torch.tensor(window['score'].values, dtype=torch.float64),
             
             # read depth * initiation rate values per gene j
-            'C_j': torch.tensor(window['combined_lambda_alphaj'].iloc[0], dtype=torch.float64),
+            'C_j': torch.tensor(window['lambda_alphaj'].iloc[0], dtype=torch.float64),
             
             # GLM elongation rate predictions per gene j, site i
             'Z_ji': torch.tensor(window['combined_zeta'].values, dtype=torch.float64),

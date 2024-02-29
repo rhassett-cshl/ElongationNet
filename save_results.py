@@ -40,7 +40,7 @@ def save_results(config_name, config):
     loss_fn = CustomLoss()
 
     bw_columns = ["Chr", "Start", "End", "Value", "Strand"]
-    csv_columns = ["Chr", "Start", "End", "Strand", "GeneId", "X_ji", "C_j", "Predicted_Zeta", "GLM_Combined_Zeta", "GLM_Epft_Zeta", "Loss"]
+    csv_columns = ["Chr", "Start", "End", "Strand", "GeneId", "X_ji", "C_j", "Predicted_Zeta", "GLM_Combined_Zeta", "GLM_Epft_Zeta", "CNN_Loss", "GLM_Loss"]
     bw_data = {col: [] for col in bw_columns}
     csv_data = {col: [] for col in csv_columns}
     with torch.no_grad():
@@ -59,7 +59,7 @@ def save_results(config_name, config):
                 
             avg_loss, loss_items = loss_fn(X_ji, C_j, rho_ji) 
             print(f"CNN Avg Test Loss: {avg_loss}\n")  
-            avg_loss2, loss_items = loss_fn(X_ji, C_j, torch.log(batch["Z_ji"][0])) 
+            avg_loss2, loss_items2 = loss_fn(X_ji, C_j, torch.log(batch["Z_ji"][0])) 
             print(f"GLM Avg Test Loss: {avg_loss2}\n")  
 
             if save_bigwig:
@@ -79,7 +79,8 @@ def save_results(config_name, config):
             csv_data["GLM_Epft_Zeta"].extend(batch["epft_Z_ji"][0].numpy())
             csv_data["Strand"].extend(batch["Strand"][0].numpy())
             csv_data["X_ji"].extend(batch["X_ji"][0].numpy())
-            csv_data["Loss"].extend(loss_items[0].numpy())
+            csv_data["CNN_Loss"].extend(loss_items[0].numpy())
+            csv_data["GLM_Loss"].extend(loss_items2[0].numpy())
 
             csv_data["C_j"].extend([batch["C_j"][0].numpy()] * batch_size)
             csv_data["GeneId"].extend([batch["GeneId"][0]] * batch_size)
