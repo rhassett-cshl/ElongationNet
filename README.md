@@ -1,4 +1,3 @@
-test
 # ElongationNet
 
 ## Quick Start
