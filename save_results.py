@@ -12,7 +12,7 @@ nucleotides = ['A', 'T', 'G', 'C']
 test_batch_size = 1
 bw_columns = ['Chr', 'Start', 'End', 'Value', 'Strand']
 
-save_bigwig = False
+save_bigwig = True
 
 def save_results(config_name, config):
     train_data, valid_data, test_data = read_pickle(config["cell_type"])
