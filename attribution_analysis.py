@@ -10,7 +10,7 @@ import json
 nucleotides = ['A', 'T', 'G', 'C']
 test_batch_size = 1
 
-train_data, valid_data, test_data = read_pickle("k562")
+train_data, valid_data, test_data = read_pickle("k562_performance_analysis_datasets")
 column_names = np.array(train_data.columns)
 feature_names = column_names[6:16]
 num_ep_features = len(feature_names)
@@ -19,10 +19,10 @@ num_seq_features = len(nucleotides)
 cuda_available = torch.cuda.is_available()
 device = torch.device("cuda" if cuda_available else "cpu")
 
-with open("./configs/elongation_net_v1.json", 'r') as file:
+with open("./configs/elongation_net_v1_performance_analysis.json", 'r') as file:
     config = json.load(file)
 
-model = load_model_checkpoint("elongation_net_v1", config, device, num_ep_features, num_seq_features)
+model = load_model_checkpoint("elongation_net_v1_performance_analysis", config, device, num_ep_features, num_seq_features)
 
 model.eval()
 
@@ -31,23 +31,21 @@ test_dl = setup_dataloader(test_data, feature_names, nucleotides, test_batch_siz
 # Initialize Integrated Gradients
 integrated_gradients = IntegratedGradients(model)
 
-first_batch = next(iter(test_dl))
-Y_ji = first_batch['Y_ji'].to(device)
-N_ji = first_batch['N_ji'].to(device)
-
-# Compute attributions
 epigenomic_attributions = []
 sequence_attributions = []
-for target_index in range(len(first_batch)):
-    attributions, delta = integrated_gradients.attribute((Y_ji, N_ji), target=target_index, return_convergence_delta=True)
-    epigenomic_attributions.append(attributions[0])
-    sequence_attributions.append(attributions[1])
-    print(attributions)
-    #all_deltas.append(delta)
+for idx, batch in enumerate(test_dl):
+    print(f"batch idx: {idx}")
+    Y_ji = batch['Y_ji'].to(device)
+    N_ji = batch['N_ji'].to(device)
 
-# at some point will not want to remove the batch dimension
-epigenomic_attributions = np.array(epigenomic_attributions[0].squeeze(0))
-sequence_attributions = np.array(sequence_attributions[0].squeeze(0))
+    for target_index in range(len(batch)):
+        attributions, delta = integrated_gradients.attribute((Y_ji, N_ji), target=target_index, return_convergence_delta=True)
+        epigenomic_attributions.append(attributions[0].squeeze(0).cpu().detach().numpy())
+        sequence_attributions.append(attributions[1].squeeze(0).cpu().detach().numpy())
+        #all_deltas.append(delta)
+        
+epigenomic_attributions = np.concatenate(epigenomic_attributions, axis=0)
+sequence_attributions = np.concatenate(sequence_attributions, axis=0)
 
 # Average attributions across all predictions
 avg_epigenomic_attributions = np.mean(epigenomic_attributions, axis=0)
@@ -72,8 +70,8 @@ plt.xlabel('Sequence Feature Index')
 plt.ylabel('Average Attribution')
 
 plt.tight_layout()
-plt.savefig("attributions_testing/batchsize_1.png")
-with open("attributions_testing/batchsize_1.txt", 'w') as f:
+plt.savefig("attributions_testing/attributions_performance_analysis_dataset.png")
+with open("attributions_testing/attributions_performance_analysis_dataset.txt", 'w') as f:
     # Write the text
     f.write("Epigenomic Feature Attributions: \n")
     for idx, feature in enumerate(feature_names):
