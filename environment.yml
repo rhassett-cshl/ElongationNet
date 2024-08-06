@@ -1,4 +1,4 @@
-name: base
+name: elongation_net
 channels:
   - conda-forge
   - bioconda
