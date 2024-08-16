@@ -10,7 +10,7 @@ import json
 nucleotides = ['A', 'T', 'G', 'C']
 test_batch_size = 1
 
-train_data, valid_data, test_data = read_pickle("k562_performance_analysis_datasets")
+train_data, valid_data, test_data = read_pickle("k562_datasets")
 column_names = np.array(train_data.columns)
 feature_names = column_names[6:16]
 num_ep_features = len(feature_names)
@@ -19,10 +19,10 @@ num_seq_features = len(nucleotides)
 cuda_available = torch.cuda.is_available()
 device = torch.device("cuda" if cuda_available else "cpu")
 
-with open("./configs/elongation_net_v1_performance_analysis.json", 'r') as file:
+with open("./configs/elongation_net_v1.json", 'r') as file:
     config = json.load(file)
 
-model = load_model_checkpoint("elongation_net_v1_performance_analysis", config, device, num_ep_features, num_seq_features)
+model = load_model_checkpoint("elongation_net_v1", config, device, num_ep_features, num_seq_features)
 
 model.eval()
 
@@ -70,8 +70,8 @@ plt.xlabel('Sequence Feature Index')
 plt.ylabel('Average Attribution')
 
 plt.tight_layout()
-plt.savefig("attributions_testing/attributions_performance_analysis_dataset.png")
-with open("attributions_testing/attributions_performance_analysis_dataset.txt", 'w') as f:
+plt.savefig("attributions_testing/attributions_elongation_netv1.png")
+with open("attributions_testing/attributions_elongation_netv1.txt", 'w') as f:
     # Write the text
     f.write("Epigenomic Feature Attributions: \n")
     for idx, feature in enumerate(feature_names):
