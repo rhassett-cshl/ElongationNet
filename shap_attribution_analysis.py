@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json
 import shap
+import pickle
 
 nucleotides = ['A', 'T', 'G', 'C']
 test_batch_size = 500
@@ -15,6 +16,7 @@ train_batch_size = 500
 train_data, valid_data, test_data = read_pickle("k562_performance_analysis_datasets")
 column_names = np.array(train_data.columns)
 feature_names = column_names[6:16]
+combined_feature_names = list(feature_names) + nucleotides
 num_ep_features = len(feature_names)
 num_seq_features = len(nucleotides)
 
@@ -31,7 +33,7 @@ train_window_size = None
 if config["train_use_sliding_window"]:
     train_window_size = config["train_window_size"]
 train_dl = setup_dataloader(train_data, feature_names, nucleotides, train_batch_size, True, train_window_size)
-test_dl = setup_dataloader(test_data, feature_names, nucleotides, test_batch_size, True, train_window_size)
+test_dl = setup_dataloader(test_data, feature_names, nucleotides, test_batch_size, False, None)
 
 first_train_batch = next(iter(train_dl))
 background_Y_ji = first_train_batch['Y_ji']
@@ -45,5 +47,7 @@ test_Y_ji = first_test_batch['Y_ji']
 test_N_ji = first_test_batch['N_ji']
 combined_input = [test_Y_ji, test_N_ji]
 shap_values = explainer.shap_values(combined_input)
-np.savez('shap_gradient_values_batch1.npz', shap_values=shap_values)
 
+data_to_save = {'shap_values': shap_values, 'feature_names': combined_feature_names}
+with open('shap_gradient_values_batch1_full.pkl', 'wb') as file:
+    pickle.dump(data_to_save, file)
