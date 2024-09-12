@@ -5,7 +5,7 @@ from models.Ep_Allmer_CNN import Ep_Allmer_CNN
 from models.Ep_Allmer_CNN_LSTM import Ep_Allmer_CNN_LSTM
 from models.Ep_Allmer_LSTM import Ep_Allmer_LSTM
 
-def setup_model(config, device, num_ep_features, num_seq_features):
+def setup_model(config, device, num_ep_features, num_seq_features, window_size=None):
     
     cuda_available = torch.cuda.is_available()
     # num_gpus = torch.cuda.device_count()
@@ -26,7 +26,6 @@ def setup_model(config, device, num_ep_features, num_seq_features):
                                    config["y_channels"], config["y_kernel_sizes"], 
                                    config["n_channels"], config["n_kernel_sizes"], config["dropout"], 
                                    config["num_lstm_layers"], config["lstm_layer_size"], config["bidirectional"])
-        
 
     if cuda_available:
         """

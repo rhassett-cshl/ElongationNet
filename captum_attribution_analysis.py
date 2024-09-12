@@ -35,6 +35,8 @@ integrated_gradients = IntegratedGradients(model)
 epigenomic_attributions = []
 sequence_attributions = []
 for idx, batch in enumerate(test_dl):
+    if idx == 50:
+        break
     print(f"batch idx: {idx}")
     Y_ji = batch['Y_ji'].to(device)
     N_ji = batch['N_ji'].to(device)
@@ -43,7 +45,6 @@ for idx, batch in enumerate(test_dl):
         attributions, delta = integrated_gradients.attribute((Y_ji, N_ji), target=target_index, return_convergence_delta=True)
         epigenomic_attributions.append(attributions[0].squeeze(0).cpu().detach().numpy())
         sequence_attributions.append(attributions[1].squeeze(0).cpu().detach().numpy())
-        #all_deltas.append(delta)
         
 epigenomic_attributions = np.concatenate(epigenomic_attributions, axis=0)
 sequence_attributions = np.concatenate(sequence_attributions, axis=0)

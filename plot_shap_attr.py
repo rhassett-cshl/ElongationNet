@@ -17,11 +17,18 @@ test_dl = setup_dataloader(test_data, feature_names, nucleotides, test_batch_siz
 first_test_batch = next(iter(test_dl))
 test_N_ji = first_test_batch['N_ji']
 
-with open('/home/hassett/ElongationNet/captum_avg_gradient_values.pkl', 'rb') as file:
+with open('/home/hassett/ElongationNet/shap_gradient_values_batch1.pkl', 'rb') as file:
     data = pickle.load(file)
 
 print("Finish loading shap values")
 
-#seq_shap_values_aggregated = np.sum(data["shap_values"][1], axis=3) #np.mean
-attributions = np.transpose(data["shap_values"][1], (0, 2, 1))
-np.savez('captum_avg_attributions', attributions)
+summed_shap_epigenomic = np.mean(data["shap_values"][0], axis=(0, 1, 3))
+summed_shap_sequence = np.mean(data["shap_values"][1], axis=(0, 1, 3))
+
+explainer = shap.Explanation(values=summed_shap_sequence, feature_names=nucleotides)
+shap.plots.bar(explainer) #max_display=15
+plt.savefig('shap_seq_sum_bar_plot_seq.png')
+
+explainer = shap.Explanation(values=summed_shap_epigenomic, feature_names=feature_names)
+shap.plots.bar(explainer) #max_display=15
+plt.savefig('shap_epi_sum_bar_plot_seq.png')
