@@ -31,15 +31,15 @@ model = load_model_checkpoint("elongation_net_v1_performance_analysis", config, 
 model.eval()
 
 # kmer mapped to target pos of active site
-kmer_dict = {"AGT": 1}
+kmer_dict = {"TAC": 1}
 flank_len = 5
-dir_name = "kmer_AGT_attr_results"
+dir_name = "kmer_TAC_attr_results"
 os.mkdir(dir_name)
 
 # use chromosome 1 from test dataset
-#test_df = test_data[(test_data['seqnames'] == 1)]
+test_df = test_data[(test_data['seqnames'] == 1)]
 
-test_dl = setup_dataloader(test_data, feature_names, nucleotides, test_batch_size, False, None)
+test_dl = setup_dataloader(test_df, feature_names, nucleotides, test_batch_size, False, None)
 
 gradient_shap = GradientShap(model)
 
