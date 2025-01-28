@@ -19,7 +19,7 @@ nucleotide_to_index = {
 
 nucleotides = ['A', 'T', 'G', 'C']
 test_batch_size = 1
-train_data, valid_data, test_data = read_pickle("k562_datasets")
+train_data, valid_data, test_data = read_pickle("data/k562_performance_analysis_datasets")
 column_names = np.array(train_data.columns)
 feature_names = column_names[6:16]
 num_ep_features = len(feature_names)
@@ -31,13 +31,10 @@ model = load_model_checkpoint("elongation_net_v1_performance_analysis", config, 
 model.eval()
 
 # kmer mapped to target pos of active site
-kmer_dict = {"TAG": 1}
+kmer_dict = {"TAA": 1}
 flank_len = 5
-dir_name = "kmer_TAG_attr_results_larger_dataset"
+dir_name = "kmer_TAA_attr_results_larger_dataset2"
 os.mkdir(dir_name)
-
-# use chromosome 1 from test dataset
-#test_df = test_data[(test_data['seqnames'] == 1)]
 
 test_dl = setup_dataloader(test_data, feature_names, nucleotides, test_batch_size, False, None)
 
@@ -46,7 +43,7 @@ gradient_shap = GradientShap(model)
 chr1_data = next(iter(test_dl))
 Y_ji = chr1_data['Y_ji'].squeeze(0)
 N_ji = chr1_data['N_ji'].squeeze(0)
-plot_individual_matches = True
+plot_individual_matches = False
 
 for motif, active_site_idx in kmer_dict.items():
     indices = [nucleotide_to_index[n] for n in motif]

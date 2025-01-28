@@ -30,10 +30,12 @@ with open("./configs/elongation_net_v1_performance_analysis.json", 'r') as file:
 model = load_model_checkpoint("elongation_net_v1_performance_analysis", config, device, num_ep_features, num_seq_features)
 model.eval()
 
+methylation_attribution_df = pd.DataFrame(columns=["motif", "avg_wgbs_attr"]) 
+
 # kmer mapped to target pos of active site
-kmer_dict = {"CA": 0}
+kmer_dict = {"TTT": 1}
 flank_len = 5
-dir_name = "kmer_CA_attr_results_methylation"
+dir_name = "kmer_TTT_attr_results_methylation"
 os.makedirs(dir_name, exist_ok=True)
 
 test_dl = setup_dataloader(test_data, feature_names, nucleotides, test_batch_size, False, None)
@@ -46,6 +48,9 @@ for motif, active_site_idx in kmer_dict.items():
     motif_length = one_hot_motif.size(0)
     motif_matches = []
     for idx, batch in enumerate(test_dl):
+
+        if idx == 1:
+            break
 
         Y_ji = batch['Y_ji'].squeeze(0)
         N_ji = batch['N_ji'].squeeze(0)
@@ -77,7 +82,16 @@ for motif, active_site_idx in kmer_dict.items():
             target=flank_len,                     
         )
         
-        epi_attr = attributions[0][15].squeeze().detach().numpy()
+        # extract wgbs methylation attributions
+        epi_attr = attributions[0].squeeze(0)[:,9].detach().numpy()
         epi_attrs.append(epi_attr)
         
     attr_avg = np.mean(epi_attrs, axis=0)
+    methylation_attribution_df = methylation_attribution_df.append({"motif": motif, "avg_wgbs_attr": attr_avg}, ignore_index=True)
+    
+    plt.bar(f"{motif}", attr_avg, color='blue')
+    plt.title(f"Methylation Attributions for {motif}")
+    plt.savefig(f"methylation_attributions_{motif}.png")
+
+    methylation_attribution_df.to_csv(f"motifs_wgbs_attrs.csv", index=False)
+
