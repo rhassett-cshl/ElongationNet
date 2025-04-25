@@ -15,7 +15,3 @@ dependencies:
   - logomaker
   - natsort
   - pybigwig
-  - pip
-  - pip:
-      - pickle  # only needed if you're using an extra pickle package (not common)
-
